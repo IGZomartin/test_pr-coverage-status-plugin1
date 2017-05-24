@@ -82,6 +82,9 @@
   "listing": {
     "pagesize": 10
   },
+  "redirectPaths": {
+    "login": "/#/login"
+  },
   "externalServices": {
     "resonator":{
       "host": "http://localhost:3000",
@@ -95,6 +98,9 @@
       }
 
     }
-
-  }
+  },
+  "paths": {
+    "defaultProductImage": "/img/imagen1.png"
+  },
+  "httpPayloadLimit": "1mb"
 }

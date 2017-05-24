@@ -9,6 +9,7 @@ const _ = require('lodash');
 
 const USER_FIXTURES = require(process.cwd() + '/test/fixtures/user/userList');
 const CLIENT_FIXTURES = require(process.cwd() + '/test/fixtures/client/Client');
+const PRODUCT_FIXTURES = require(process.cwd() + '/test/fixtures/product/productList');
 const INVALID_CLIENT = require(process.cwd() + '/test/fixtures/client/invalidClient');
 const VALID_CLIENT = require(process.cwd() + '/test/fixtures/client/validClient');
 const INVALID_CLIENT_ID = '01f0000000000000013f0020';
@@ -175,6 +176,71 @@ describe('Client Router', function() {
     });
   });
 
+  it('Update Client: Valid Client with other name', function(done) {
+    let client = _.clone(CLIENT_FIXTURES[1]);
+
+    client.name = 'Some other name';
+
+    let user = USER_FIXTURES[1];
+    let product = PRODUCT_FIXTURES[1];
+
+    fixtures({
+      Client: CLIENT_FIXTURES,
+      Product: PRODUCT_FIXTURES
+    }, function(err) {
+
+      expect(err).to.be(null);
+
+      request(app)
+        .put('/api/v1/client/' + client._id)
+        .set('Content-Type', 'application/json; charset=utf-8')
+        .set('x-user-id', SUPERADMIN_X_USER_ID)
+        .send(client)
+        .expect(204)
+        .end(function(err, res) {
+          expect(err).to.be(null);
+          expect(res.body).to.be.empty();
+
+          request(app)
+            .get('/api/v1/client/' + client.name)
+            .set('Content-Type', 'application/json; charset=utf-8')
+            .set('x-user-id', SUPERADMIN_X_USER_ID)
+            .expect(200)
+            .end(function(err, res) {
+              expect(err).to.be(null);
+              expect(res.body.name).to.be.eql(client.name);
+              expect(res.body.domains).to.be.eql(client.domains);
+              expect(res.body.envs).to.be.eql(client.envs);
+
+              request(app)
+                .get('/api/v1/user/list')
+                .set('Content-Type', 'application/json; charset=utf-8')
+                .set('x-user-id', SUPERADMIN_X_USER_ID)
+                .expect(200)
+                .end(function(err, res) {
+                  expect(err).to.be(null);
+                  expect(res.body).to.not.be(undefined);
+                  let theUser = _.where(res.body, {'_id': user._id})[0];
+
+                  expect(theUser.client).to.equal(client.name);
+
+                  request(app)
+                    .get('/api/v1/product/' + product._id)
+                    .set('Content-Type', 'application/json; charset=utf-8')
+                    .set('x-user-id', SUPERADMIN_X_USER_ID)
+                    .expect(200)
+                    .end(function(err, res) {
+                      expect(err).to.be(null);
+                      expect(res.body).to.not.be(undefined);
+                      expect(res.body.client).to.be.eql(client.name);
+                      return done();
+                    });
+                });
+            });
+        });
+    });
+  });
+
   it('Update Client: Invalid Client', function(done) {
     let client = _.clone(CLIENT_FIXTURES[0]);
     client._id = '01f0000000000000013f0020';
@@ -201,8 +267,82 @@ describe('Client Router', function() {
     });
   });
 
+  it('Update Client: Invalid Client with duplicate client name', function(done) {
+    let client = _.clone(CLIENT_FIXTURES[0]);
 
-  it('Delete Client: Valid Client', function(done) {
+    client.name = 'GothamCity';
+
+
+    fixtures({
+      Client: CLIENT_FIXTURES,
+      Product: PRODUCT_FIXTURES
+    }, function(err) {
+
+      expect(err).to.be(null);
+
+      request(app)
+        .put('/api/v1/client/' + client._id)
+        .set('Content-Type', 'application/json; charset=utf-8')
+        .set('x-user-id', SUPERADMIN_X_USER_ID)
+        .send(client)
+        .expect(409)
+        .end(function(err, res) {
+          expect(err).to.be(null);
+          expect(res.body).to.not.be.empty();
+          expect(res.body).to.have.property('code');
+          expect(res.body.code).to.equal('ConflictError');
+          expect(res.body).to.have.property('message');
+          expect(res.body.message).to.equal('There already exists a client with the provided name');
+          return done();
+
+        });
+    });
+  });
+
+
+  it('Delete Client: Valid Client with associated products', function(done) {
+
+    let client = _.clone(CLIENT_FIXTURES[0]);
+
+    fixtures({
+      Client: CLIENT_FIXTURES,
+      Product: PRODUCT_FIXTURES
+    }, function(err) {
+
+      expect(err).to.be(null);
+      request(app)
+        .del('/api/v1/client/' + client._id)
+        .set('Content-Type', 'application/json; charset=utf-8')
+        .set('x-user-id', NON_ADMIN_VALID_X_USER_ID)
+        .expect(400)
+        .end(function(err, res) {
+          expect(err).to.be(null);
+          expect(res).not.to.be(undefined);
+
+          let response = res.body;
+          expect(response).to.have.property('code');
+          expect(response.code).to.equal('BadRequestError');
+          expect(response).to.have.property('message');
+          expect(response.message).to.equal('Cannot delete client with associated products');
+
+          request(app)
+            .get('/api/v1/client/' + client.name)
+            .set('Content-Type', 'application/json; charset=utf-8')
+            .set('x-user-id', NON_ADMIN_VALID_X_USER_ID)
+            .expect(200)
+            .end(function(err, res) {
+              expect(err).to.be(null);
+              expect(res).not.to.be(undefined);
+              let foundClient = res.body;
+              expect(foundClient).to.have.property('name');
+              expect(foundClient.name).to.equal(client.name);
+              return done();
+            });
+        });
+    });
+  });
+
+  it('Delete Client: Valid Client without associated products', function(done) {
 
     let client = _.clone(CLIENT_FIXTURES[0]);
 

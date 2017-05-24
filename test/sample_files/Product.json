@@ -17,7 +17,8 @@
         "environment": "development",
         "uploaded_at": "2015-03-31T11:00:18.622+0200",
         "url": "www.downloader.intelygenz.com/files/aXjkmFF2gd",
-        "filename": "igz-develop.ipa"
+        "filename": "igz-develop.ipa",
+        "publicToken": "01f0000000000000003f9990"
       },
       {
         "platform": "android",
@@ -26,7 +27,8 @@
         "environment": "development",
         "uploaded_at": "2015-03-31T11:00:18.622+0200",
         "url": "www.downloader.intelygenz.com/files/Rhfgh43rtTr",
-        "filename": "igz-droid.apk"
+        "filename": "igz-droid.apk",
+        "publicToken": "01f0000000000000003f9992"
       }
     ]
   },
@@ -48,7 +50,8 @@
         "environment": "development",
         "uploaded_at": "2015-03-31T11:00:18.622+0200",
         "url": "www.downloader.intelygenz.com/files/hfjdJg3V22ds",
-        "filename": "monorail-dev.ipa"
+        "filename": "monorail-dev.ipa",
+        "publicToken": "01f0000000000000003f9994"
       },
       {
         "platform": "windows",
@@ -57,7 +60,8 @@
         "environment": "development",
         "uploaded_at": "2015-03-31T11:00:18.622+0200",
         "url": "www.downloader.intelygenz.com/files/jk43H3nmnZ",
-        "filename": "monorail.wp"
+        "filename": "monorail.wp",
+        "publicToken": "01f0000000000000003f9996"
       }
     ]
   },
@@ -79,7 +83,8 @@
         "environment": "development",
         "uploaded_at": "2015-03-31T11:00:18.622+0200",
         "url": "www.downloader.intelygenz.com/files/lkwee27r28J",
-        "filename": "hyper-loop.ipa"
+        "filename": "hyper-loop.ipa",
+        "publicToken": "01f0000000000000003f9998"
       }
     ],
     "subscriptions": ["01f0000000000000003f0005"]

@@ -3,10 +3,15 @@
 const expect = require('expect.js');
 const fixtures = require('node-mongoose-fixtures');
 const clientManager = require('../../../lib/managers/Client');
+const userManager = require('../../../lib/managers/User');
+const productManager = require('../../../lib/managers/Product');
 const resetDB = require('../../../lib/util/reset_db');
 const _ = require('lodash');
+const async = require('async');
 
+const USER_FIXTURES = require(process.cwd() + '/test/fixtures/user/userList');
 const CLIENT_FIXTURES = require(process.cwd() + '/test/fixtures/client/Client');
+const PRODUCT_FIXTURES = require(process.cwd() + '/test/fixtures/product/productList');
 const INVALID_CLIENT = require(process.cwd() + '/test/fixtures/client/invalidClient');
 const VALID_CLIENT = require(process.cwd() + '/test/fixtures/client/validClient');
 const INVALID_CLIENT_ID = '01f0000000000000013f0020';
@@ -131,6 +136,60 @@ describe('Client Manager', function() {
     });
   });
 
+  it('Update Client: Existing Client with different name', function(done) {
+    let client = _.clone(CLIENT_FIXTURES[1]);
+
+    client.name = 'Some other name';
+
+    let user = USER_FIXTURES[1];
+    let product = PRODUCT_FIXTURES[1];
+
+    fixtures({
+      Client: CLIENT_FIXTURES,
+      Product: PRODUCT_FIXTURES,
+      User: USER_FIXTURES
+    }, function(err) {
+      expect(err).to.be(null);
+
+      async.series({
+        updateClient: function(microDone) {
+          clientManager.update(client._id, client, function(error, result) {
+            expect(error).to.be(null);
+            expect(result).to.be(undefined);
+            return microDone();
+          });
+        },
+        checkClient: function(microDone) {
+          clientManager.get(client.name, function(error, foundClient) {
+            expect(error).to.be(null);
+            expect(foundClient).to.not.be(undefined);
+            expect(foundClient.name).to.equal(client.name);
+            return microDone();
+          });
+        },
+        checkUser: function(microDone) {
+          userManager.get(user._id, function(error, foundUser) {
+            expect(error).to.be(null);
+            expect(foundUser).to.not.be(undefined);
+            expect(foundUser.client).to.equal(client.name);
+            return microDone();
+          });
+        },
+        checkProduct: function(microDone) {
+          productManager.get(product._id, function(error, foundProduct) {
+            expect(error).to.be(null);
+            expect(foundProduct).not.to.be(undefined);
+            expect(foundProduct.client).to.equal(client.name);
+            return microDone();
+          });
+        }
+      }, function(error) {
+        expect(error).to.be(null);
+        return done();
+      });
+    });
+  });
+
   it('Update Client: Non-existing Client', function(done) {
     let data = {
       name: 'Invent Co.'
@@ -154,7 +213,30 @@ describe('Client Manager', function() {
     });
   });
 
-  it('Delete Client: Existing Client', function(done) {
+  it('Delete Client: Existing Client with associated products', function(done) {
+    let clientToDelete = CLIENT_FIXTURES[0];
+
+    fixtures({
+      Client: CLIENT_FIXTURES,
+      Product: PRODUCT_FIXTURES
+    }, function(err) {
+      expect(err).to.be(null);
+
+      clientManager.delete(clientToDelete._id, function(err, result) {
+        expect(err).not.to.be(null);
+        let response = err.body;
+        expect(response).to.have.property('code');
+        expect(response.code).to.equal('BadRequestError');
+        expect(response).to.have.property('message');
+        expect(response.message).to.equal('Cannot delete client with associated products');
+        expect(result).to.be(undefined);
+
+        return done();
+      });
+    });
+  });
+
+  it('Delete Client: Existing Client without associated products', function(done) {
     let clientToDelete = CLIENT_FIXTURES[0];
 
     fixtures({
@@ -178,7 +260,8 @@ describe('Client Manager', function() {
   it('Delete Client: Non-existing Client', function(done) {
 
     fixtures({
-      Client: CLIENT_FIXTURES
+      Client: CLIENT_FIXTURES,
+      Product: PRODUCT_FIXTURES
     }, function(err) {
       expect(err).to.be(null);
 

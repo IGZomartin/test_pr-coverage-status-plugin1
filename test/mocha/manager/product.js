@@ -7,6 +7,7 @@ const urlConstructor = require('../../../lib/util/url_constructor');
 const resetDB = require('../../../lib/util/reset_db');
 const _ = require('lodash');
 const productFilter = require('./../filter_product_data');
+const NON_EXISTING_PRODUCT_ID = '01f0000000000000003fabcd';
 
 describe('Product: Create Product', function() {
 
@@ -50,8 +51,129 @@ describe('Product: Create Product', function() {
     });
   });
 
-  it('Delete Product: Valid Product', function(done) {
+  it('Create Product: creates product with existing name but different client', function(done) {
     let productInfo = require(process.cwd() + '/test/fixtures/product/validProduct');
+
+    productManager.create(productInfo, function(error, createdProduct) {
+      expect(error).to.be(null);
+      expect(createdProduct).to.not.be(undefined);
+      expect(createdProduct).to.have.property('_id');
+      expect(createdProduct.id).to.equal(productInfo._id);
+      expect(createdProduct).to.have.property('name');
+      expect(createdProduct.name).to.equal(productInfo.name);
+      expect(createdProduct).to.have.property('client');
+      expect(createdProduct.client).to.equal(productInfo.client);
+
+      let secondProductInfo = _.clone(productInfo);
+      secondProductInfo.client = 'Invent Co';
+      secondProductInfo._id = secondProductInfo._id.substr(0, secondProductInfo._id.length - 1) + '3';
+
+      productManager.create(secondProductInfo, function(error, createdProduct) {
+        expect(error).to.be(null);
+        expect(createdProduct).to.not.be(undefined);
+        expect(createdProduct).to.have.property('_id');
+        expect(createdProduct.id).to.equal(secondProductInfo._id);
+        expect(createdProduct).to.have.property('name');
+        expect(createdProduct.name).to.equal(secondProductInfo.name);
+        expect(createdProduct).to.have.property('client');
+        expect(createdProduct.client).to.equal(secondProductInfo.client);
+        return done();
+      });
+    });
+  });
+
+  it('Create Product: fails due to missing \'name\' field', function(done) {
+    let productInfo = _.clone(require(process.cwd() + '/test/fixtures/product/validProduct'));
+    delete productInfo.name;
+
+    productManager.create(productInfo, function(error, createdProduct) {
+      expect(error).not.to.be(null);
+      expect(createdProduct).to.be(undefined);
+      expect(error.body).to.have.property('code');
+      expect(error.body.code).to.equal('BadRequestError');
+      expect(error.body).to.have.property('message');
+      expect(error.body.message).to.equal('Missing name and/or client info for new product');
+      return done();
+    });
+  });
+
+  it('Create Product: fails due to missing \'client\' field', function(done) {
+    let productInfo = _.clone(require(process.cwd() + '/test/fixtures/product/validProduct'));
+    delete productInfo.client;
+
+    productManager.create(productInfo, function(error, createdProduct) {
+      expect(error).not.to.be(null);
+      expect(createdProduct).to.be(undefined);
+      expect(error.body).to.have.property('code');
+      expect(error.body.code).to.equal('BadRequestError');
+      expect(error.body).to.have.property('message');
+      expect(error.body.message).to.equal('Missing name and/or client info for new product');
+      return done();
+    });
+  });
+
+  it('Create Product: fails due to duplicate name for same client', function(done) {
+    let productInfo = require(process.cwd() + '/test/fixtures/product/validProduct');
+
+    productManager.create(productInfo, function(error, createdProduct) {
+      expect(error).to.be(null);
+      expect(createdProduct).to.not.be(undefined);
+      expect(createdProduct).to.have.property('_id');
+      expect(createdProduct.id).to.equal(productInfo._id);
+      expect(createdProduct).to.have.property('name');
+      expect(createdProduct.name).to.equal(productInfo.name);
+      expect(createdProduct).to.have.property('client');
+      expect(createdProduct.client).to.equal(productInfo.client);
+
+      let dupProductInfo = _.clone(productInfo);
+
+      productManager.create(dupProductInfo, function(error, createdProduct) {
+        expect(error).not.to.be(null);
+        expect(createdProduct).to.be(undefined);
+        expect(error.body).to.have.property('code');
+        expect(error.body.code).to.equal('ConflictError');
+        expect(error.body).to.have.property('message');
+        expect(error.body.message).to.equal('There already exists a Product with the same name for client ' + dupProductInfo.client);
+        return done();
+      });
+    });
+  });
+
+  it('Delete Product: Valid Product with existing compilations', function(done) {
+    let productInfo = require(process.cwd() + '/test/fixtures/product/validProduct');
+
+    fixtures({
+      Product: [productInfo]
+    }, function(err, data) {
+
+      expect(err).to.be(null);
+
+      let product = data[0][0];
+
+      productManager.delete(product._id, function(err) {
+
+        expect(err).not.to.be(null);
+        expect(err.body).to.have.property('message');
+        expect(err.body.message).to.equal('Cannot delete product with existing compilations');
+        expect(err.body).to.have.property('code');
+        expect(err.body.code).to.equal('ConflictError');
+
+        productManager.get(product._id, function(err, foundProduct) {
+          expect(err).to.be(null);
+          expect(foundProduct).to.not.be(undefined);
+          expect(foundProduct).to.have.property('_id');
+          expect(foundProduct._id.toString()).to.equal(product._id.toString());
+          expect(foundProduct).to.have.property('compilations');
+          expect(foundProduct.compilations).to.have.length(foundProduct.compilations.length);
+          return done();
+        });
+      });
+    });
+  });
+
+  it('Delete Product: Valid product with no compilations', function(done) {
+    let productInfo = _.clone(require(process.cwd() + '/test/fixtures/product/validProduct'));
+    productInfo.compilations = [];
 
     fixtures({
       Product: [productInfo]
@@ -65,7 +187,93 @@ describe('Product: Create Product', function() {
 
         expect(err).to.be(null);
 
-        done();
+        productManager.get(product._id, function(err, foundProduct) {
+          expect(err).not.to.be(null);
+          expect(foundProduct).to.be(undefined);
+          expect(err.body).to.have.property('code');
+          expect(err.body.code).to.equal('NotFoundError');
+          expect(err.body).to.have.property('message');
+          expect(err.body.message).to.equal('Product not found');
+          return done();
+        });
+      });
+    });
+  });
+
+  it('Delete all compilations: Valid Product with existing compilations', function(done) {
+    let productInfo = require(process.cwd() + '/test/fixtures/product/validProduct');
+
+    fixtures({
+      Product: [productInfo]
+    }, function(err, data) {
+
+      expect(err).to.be(null);
+
+      let product = data[0][0];
+
+      productManager.removeAllCompilations(product._id, function(err) {
+
+        expect(err).to.be(null);
+
+        productManager.get(product._id, function(err, foundProduct) {
+          expect(err).to.be(null);
+          expect(foundProduct).not.to.be(undefined);
+          expect(foundProduct).to.have.property('_id');
+          expect(foundProduct._id.toString()).to.equal(product._id.toString());
+          expect(foundProduct).to.have.property('compilations');
+          expect(foundProduct.compilations).to.be.empty();
+          return done();
+        });
+      });
+    });
+  });
+
+  it('Delete all compilations: Valid Product with no compilations', function(done) {
+    let productInfo = _.clone(require(process.cwd() + '/test/fixtures/product/validProduct'));
+    productInfo.compilations = [];
+
+    fixtures({
+      Product: [productInfo]
+    }, function(err, data) {
+
+      expect(err).to.be(null);
+
+      let product = data[0][0];
+
+      productManager.removeAllCompilations(product._id, function(err) {
+
+        expect(err).to.be(null);
+
+        productManager.get(product._id, function(err, foundProduct) {
+          expect(err).to.be(null);
+          expect(foundProduct).not.to.be(undefined);
+          expect(foundProduct).to.have.property('_id');
+          expect(foundProduct._id.toString()).to.equal(product._id.toString());
+          expect(foundProduct).to.have.property('compilations');
+          expect(foundProduct.compilations).to.be.empty();
+          return done();
+        });
+      });
+    });
+  });
+
+  it('Delete all compilations: Non existing product', function(done) {
+    let productInfo = require(process.cwd() + '/test/fixtures/product/validProduct');
+
+    fixtures({
+      Product: [productInfo]
+    }, function(err) {
+
+      expect(err).to.be(null);
+
+      productManager.removeAllCompilations(NON_EXISTING_PRODUCT_ID, function(err) {
+
+        expect(err).not.to.be(null);
+        expect(err.body).to.have.property('code');
+        expect(err.body.code).to.equal('NotFoundError');
+        expect(err.body).to.have.property('message');
+        expect(err.body.message).to.equal('Product not found');
+        return done();
       });
     });
   });
@@ -228,7 +436,7 @@ describe('Product: Create Product', function() {
     let options = {
       offset: 0,
       pageSize: 10,
-      productPlatform: 'android'
+      productPlatform: 'ios'
     };
 
     fixtures({
@@ -240,7 +448,6 @@ describe('Product: Create Product', function() {
 
       productManager.list(adminUser, options, function(err, result ) {
         expect(err).to.be(null);
-
         let filteredCompilationIds = productFilter.getCompilationIdsWithFilter(products, {'platform': options.productPlatform});
 
         let returnedCompilationIds = productFilter.getCompilationIds(result);
@@ -264,7 +471,7 @@ describe('Product: Create Product', function() {
     let options = {
       offset: 0,
       pageSize: 10,
-      productPlatform: 'android'
+      productPlatform: 'ios'
     };
 
     fixtures({

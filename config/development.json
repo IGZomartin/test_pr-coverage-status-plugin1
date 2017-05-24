@@ -1,9 +1,23 @@
 {
   "db": {
-    "conn": "mongodb://localhost:27017/igz-download-manager-datastore?w=1"
+    "conn": "mongodb://mongodb:27017/igz-download-manager-datastore?w=1"
   },
   "cookies": {
     "maxAge": 3600000
   },
-  "host": "https://appsthordev.intelygenz.com"
+  "host": "https://appsthordev.intelygenz.com",
+  "externalServices": {
+    "resonator":{
+      "host": "http://resonator:3000",
+      "services": {
+        "createIdentity": {
+          "path": "/api/identity"
+        },
+        "email": {
+          "path": "/api/notification/email"
+        }
+      }
+
+    }
+  }
 }
