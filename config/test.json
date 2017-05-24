@@ -1,9 +1,0 @@
-{
-  "db": {
-    "conn": "mongodb://localhost:27017/igz-download-manager-datastore-test"
-  },
-  "port": 4000,
-  "cookies": {
-    "maxAge": 100
-  }
-}

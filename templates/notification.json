@@ -1,8 +1,0 @@
-{
-  "ack_compilation":
-  {
-    "from": "noreply@intelygenz.com",
-    "subject": "Nueva compilación",
-    "message": "Esta es la URL de la nueva compilación: "
-  }
-}

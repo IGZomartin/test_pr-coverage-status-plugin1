@@ -1,26 +1,32 @@
-## Portal de descargas IGZ
+# HonestCode.io Features Micro-services
 
-Módulo de backend para la gestión de peticiones provenientes desde la aplicación de AngularJS perteneciente al Portal de Descargas IGZ.
+This micro server manage the features of honestcode.io
 
+## Architecture
 
-### AWS
+This micro server uses nodejs with mongodb to store data
 
-Para usar S3 como cloud storage, hay que exportar las credenciales correspondientes 
+## Tests
 
-```sh
- $> export AWS_ACCESS_KEY_ID='STRING_PARA_ACCESS_KEY'
- $> export AWS_SECRET_ACCESS_KEY='STRING_PARA_SECRET_ACCESS_KEY'
- 
- // para probar que sean correctas
- $> npm test
+### Integration tests need a MongoDB running
+
+```
+npm test-acceptance
 ```
 
-### GCS
+### Acceptance tests need a MongoDB and HTTP Server running
 
-```sh
-$> export GCS_PROJECT_ID=1234
-$> export GCS_KEY_FILENAME=keyfilename.json // debe estar en la raiz del projecto
-
- // para probar que sean correctas
- $> npm test
+Start server
 ```
+npm start
+```
+Run tests
+```
+npm run test-acceptance
+```
+
+## Run server
+```
+npm start
+```
+

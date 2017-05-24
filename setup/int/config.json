@@ -1,0 +1,8 @@
+{
+	"PORT": 3000,
+	"DB_URI": "mongodb://$DB_USER:$DB_PASSWORD@ds015955-a0.mlab.com:15955,ds015955-a1.mlab.com:15955/honestcode-int-rs?replicaSet=rs-ds015955&socketTimeoutMS=30000&slaveOk=true",
+	"papertrail": {
+		"host": "logs4.papertrailapp.com",
+		"port": 38577
+	}
+}
