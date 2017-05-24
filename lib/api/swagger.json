@@ -396,41 +396,12 @@
             }
           }
         }
-      },
-      "delete": {
-        "summary": "Delete all the compilations of a product",
-        "description": "Deletes all the compilations of the specified product\n",
-        "x-swagger-router-controller": "Products",
-        "tags": ["Products"],
-        "operationId": "deleteAllCompilations",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "Successfully deleted all compilations",
-            "schema": {
-              "$ref": "#/definitions/Success"
-            }
-          },
-          "default": {
-            "description": "Unexpected error",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          }
-        }
       }
     },
     "/product/{id}/compilation/{compilationId}": {
       "delete": {
         "summary": "Delete compilation",
-        "description": "Deletes a compilation with the specified compilationId\n",
+        "description": "Deletes a compilation withe the specified compilationId\n",
         "x-swagger-router-controller": "Compilation",
         "tags": ["Compilations"],
         "operationId": "deleteCompilation",
@@ -523,13 +494,6 @@
             "description": "Compilation identifier",
             "in": "path",
             "required": true,
-            "type": "string"
-          },
-          {
-            "name": "publicToken",
-            "description": "Public Token to Download",
-            "in": "query",
-            "required": false,
             "type": "string"
           }
         ],
@@ -1059,10 +1023,6 @@
         "filePath": {
           "type": "string",
           "description": "Path to locate the compilation file for download."
-        },
-        "publicToken": {
-          "type": "string",
-          "description": "Token to download the app without being logged"
         }
       }
     },

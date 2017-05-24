@@ -2,11 +2,10 @@
 
 const expect = require('expect.js');
 const nock = require('nock');
-const _ = require('lodash');
 const resonatorConfig = require('config').externalServices.resonator;
 const notificationManager = require('../../../lib/managers/Notification');
 const VALID_USER_ID = '01f0000000000000003f0001';
-const VALID_PRODUCT = require(process.cwd() + '/test/fixtures/product/validProduct');
+const DOWNLOAD_URL = 'http://igzdownloader.local/api/v1/product/5638ed3a4128785f38af5dc0/compilation/5638ed564128785f38af5dc1/download';
 
 
 describe('Notification Manager', function() {
@@ -47,10 +46,9 @@ describe('Notification Manager', function() {
       .reply(204);
 
     let user = {_id: VALID_USER_ID};
-    let productInfo = _.clone(VALID_PRODUCT);
-    let compilationInfo = productInfo.compilations[0];
+    let downloadUrl = DOWNLOAD_URL;
 
-    notificationManager.sendAckCompilationEmails(user, productInfo, compilationInfo, function(err) {
+    notificationManager.sendAckCompilationEmails(user, downloadUrl, function(err) {
       expect(err).to.be();
 
       done();
@@ -65,10 +63,9 @@ describe('Notification Manager', function() {
       .replyWithError(400);
 
     let identities = [VALID_USER_ID];
-    let productInfo = _.clone(VALID_PRODUCT);
-    let compilationInfo = productInfo.compilations[0];
+    let downloadUrl = DOWNLOAD_URL;
 
-    notificationManager.sendAckCompilationEmails(identities, productInfo, compilationInfo, function(err) {
+    notificationManager.sendAckCompilationEmails(identities, downloadUrl, function(err) {
       expect(err).to.not.be();
 
       done();

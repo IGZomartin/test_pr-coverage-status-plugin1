@@ -153,7 +153,6 @@ describe('Compilation Manager', function() {
     let productInfo = require(process.cwd() + '/test/fixtures/product/validProduct');
     let compilationInfo = productInfo.compilations[0];
     compilationInfo.uploaded = true;
-    let tokenUndefined;
 
     fixtures({
       Product: [productInfo]
@@ -163,7 +162,7 @@ describe('Compilation Manager', function() {
 
       let product = data[0][0];
 
-      compilationManager.download(product._id, compilationInfo.compilationId, tokenUndefined, function(err, result) {
+      compilationManager.download(product._id, compilationInfo.compilationId, function(err, result) {
 
         expect(err).to.be(null);
         expect(validator.isURL(result.url)).to.be(true);
@@ -178,7 +177,6 @@ describe('Compilation Manager', function() {
     let compilationInfo = productInfo.compilations[0];
     compilationInfo.uploaded = true;
     compilationInfo.platform = 'android';
-    let tokenUndefined;
 
     fixtures({
       Product: [productInfo]
@@ -188,65 +186,10 @@ describe('Compilation Manager', function() {
 
       let product = data[0][0];
 
-      compilationManager.download(product._id, compilationInfo.compilationId, tokenUndefined, function(err, result) {
+      compilationManager.download(product._id, compilationInfo.compilationId, function(err, result) {
 
         expect(err).to.be(null);
         expect(validator.isURL(result.url)).to.be(true);
-
-        done();
-      });
-    });
-  });
-
-  it('Download Compilation: Valid Public token', function(done) {
-    let productInfo = require(process.cwd() + '/test/fixtures/product/validProduct');
-    let compilationInfo = productInfo.compilations[0];
-    compilationInfo.uploaded = true;
-    compilationInfo.platform = 'android';
-
-    fixtures({
-      Product: [productInfo]
-    }, function(err, data) {
-
-      expect(err).to.be(null);
-
-      let product = data[0][0];
-
-      compilationManager.download(product._id, compilationInfo.compilationId, compilationInfo.publicToken, function(err, result) {
-
-        expect(err).to.be(null);
-        expect(validator.isURL(result.url)).to.be(true);
-
-        done();
-      });
-    });
-  });
-
-  it('Download Compilation: Invalid Public token', function(done) {
-    let productInfo = require(process.cwd() + '/test/fixtures/product/validProduct');
-    let compilationInfo = productInfo.compilations[0];
-    compilationInfo.uploaded = true;
-    compilationInfo.platform = 'android';
-
-    fixtures({
-      Product: [productInfo]
-    }, function(err, data) {
-
-      expect(err).to.be(null);
-
-      let product = data[0][0];
-
-      compilationManager.download(product._id, compilationInfo.compilationId, 'invalidtoken', function(error, result) {
-
-        expect(error).not.to.be(null);
-        expect(error).to.have.property('message');
-        expect(error.message).to.equal('Sorry, you do not have permission to download this app');
-        expect(error).to.have.property('body');
-        expect(error.body).to.have.property('code');
-        expect(error.body.code).to.equal('ForbiddenError');
-        expect(error.body).to.have.property('message');
-        expect(error.body.message).to.equal(error.message);
-        expect(result).to.be(undefined);
 
         done();
       });

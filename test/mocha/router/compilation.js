@@ -70,7 +70,6 @@ describe('Compilation Router', function() {
           expect(err).to.be(null);
           expect(compilation).to.have.property('url');
           expect(compilation).to.have.property('compilationId');
-          expect(compilation).to.have.property('compilation');
           done();
         });
     });
@@ -100,7 +99,6 @@ describe('Compilation Router', function() {
           expect(err).to.be(null);
           expect(compilation).to.have.property('url');
           expect(compilation).to.have.property('compilationId');
-          expect(compilation).to.have.property('compilation');
 
           request(app)
             .get('/api/v1/product/' + product._id + '/compilation')
@@ -242,38 +240,6 @@ describe('Compilation Router', function() {
     });
   });
 
-  it('Get Compilation: Public url', function(done) {
-    let productInfo = require(process.cwd() + '/test/fixtures/product/validProduct');
-    let compilationInfo = productInfo.compilations[0];
-
-
-    fixtures({
-      Product: [productInfo]
-    }, function(err, data) {
-
-      expect(err).to.be(null);
-
-      let product = data[0][0];
-
-      request(app)
-        .get('/api/v1/product/' + product._id + '/compilation')
-        .set('Content-Type', 'application/json; charset=utf-8')
-        .set('x-user-id', NON_ADMIN_VALID_X_USER_ID)
-        .expect(200)
-        .end(function(err, res) {
-
-          let compilations = res.body;
-
-          let publicUrl = `${compilations[0].downloadUrl}?publicToken=${compilationInfo.publicToken}`;
-
-          expect(err).to.be(null);
-          expect(_.find(compilations, {publicUrl: publicUrl})).not.to.be.eql(undefined);
-
-          done();
-        });
-    });
-  });
-
   it('Download Compilation: Not Uploaded Compilation', function(done) {
     let productInfo = require(process.cwd() + '/test/fixtures/product/validProduct');
     let compilationInfo = productInfo.compilations[0];
@@ -371,10 +337,14 @@ describe('Compilation Router', function() {
               .get('/api/v1/product/' + product._id + '/compilation/' + compilationInfo.compilationId + '/download')
               .set('Content-Type', 'application/json; charset=utf-8')
               .set('Cookie', response.headers['set-cookie'])
-              .expect(301)
+              .expect(401)
               .end(function(err, res) {
                 expect(err).to.be(null);
                 expect(res).not.to.be(null);
+                expect(res.body).to.have.property('code');
+                expect(res.body.code).to.equal('UnauthorizedError');
+                expect(res.body).to.have.property('message');
+                expect(res.body.message).to.equal('You need to be logged in to download this compilation');
                 done();
               });
           }, config.get('cookies.maxAge') * 2);
@@ -395,18 +365,18 @@ describe('Compilation Router', function() {
       expect(err).to.be(null);
 
       let product = data[0][0];
-      let targetPath = '/api/v1/product/' + product._id + '/compilation/' + compilationInfo.compilationId + '/download';
 
       request(app)
-        .get(targetPath)
+        .get('/api/v1/product/' + product._id + '/compilation/' + compilationInfo.compilationId + '/download')
         .set('Content-Type', 'application/json; charset=utf-8')
-        .expect(301)
+        .expect(401)
         .end(function(err, res) {
           expect(err).to.be(null);
-          expect(res.body).to.be.empty();
-
-          let redirectUrl = config.get('host') + config.get('redirectPaths.login') + '?redirect_uri=' + encodeURIComponent(config.get('host') + targetPath);
-          expect(res.headers.location).to.equal(redirectUrl);
+          expect(res.body).not.to.be(null);
+          expect(res.body).to.have.property('code');
+          expect(res.body.code).to.equal('UnauthorizedError');
+          expect(res.body).to.have.property('message');
+          expect(res.body.message).to.equal('You need to be logged in to download this compilation');
           done();
         });
     });
@@ -479,17 +449,18 @@ describe('Compilation Router', function() {
       expect(err).to.be(null);
 
       let product = data[0][0];
-      let targetPath = '/api/v1/product/' + product._id + '/compilation/' + compilationInfo.compilationId + '/download';
+
       request(app)
-        .get(targetPath)
+        .get('/api/v1/product/' + product._id + '/compilation/' + compilationInfo.compilationId + '/download')
         .set('Content-Type', 'application/json; charset=utf-8')
-        .expect(301)
+        .expect(401)
         .end(function(err, res) {
           expect(err).to.be(null);
-          expect(res.body).to.be.empty();
-
-          let redirectUrl = config.get('host') + config.get('redirectPaths.login') + '?redirect_uri=' + encodeURIComponent(config.get('host') + targetPath);
-          expect(res.headers.location).to.equal(redirectUrl);
+          expect(res.body).not.to.be(null);
+          expect(res.body).to.have.property('code');
+          expect(res.body.code).to.equal('UnauthorizedError');
+          expect(res.body).to.have.property('message');
+          expect(res.body.message).to.equal('You need to be logged in to download this compilation');
           done();
         });
     });
@@ -583,32 +554,6 @@ describe('Compilation Router', function() {
               expect(res.body.message).to.be.eql('Compilation not found');
               return done();
             });
-        });
-    });
-  });
-
-  it('Download Compilation: Invalid public token', function(done) {
-
-    let productInfo = require(process.cwd() + '/test/fixtures/product/validProduct');
-    let compilationInfo = productInfo.compilations[0];
-    compilationInfo.uploaded = true;
-
-    fixtures({
-      Product: [productInfo]
-    }, function(err, data) {
-
-      expect(err).to.be(null);
-
-      let product = data[0][0];
-
-      request(app)
-        .get('/api/v1/product/' + product._id + '/compilation/' + compilationInfo.compilationId + '/download?publicToken=invalidToken')
-        .set('Content-Type', 'application/json; charset=utf-8')
-        .expect(403)
-        .end(function(err, res) {
-          expect(err).to.be(null);
-          expect(res).not.to.be(null);
-          done();
         });
     });
   });

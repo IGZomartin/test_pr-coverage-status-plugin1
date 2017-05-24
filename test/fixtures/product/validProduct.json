@@ -21,8 +21,7 @@
       "filePath": "/path/to/file",
       "permission": "Permission",
       "filename": "igz-develop.ipa",
-      "bundleId": "com.intelygenz.appsthorpre",
-      "publicToken": "01f0000000000000003f9999"
+      "bundleId": "com.intelygenz.appsthorpre"
     },
     {
       "_id": "01f0000000000000003f0002",
@@ -36,8 +35,7 @@
       "uploaded": false,
       "filePath": "/path/to/file",
       "permission": "Permission",
-      "filename": "igz-droid.apk",
-      "publicToken": "01f0000000000000003f9990"
+      "filename": "igz-droid.apk"
     }
   ],
   "subscriptions": ["01f0000000000000003f0005"]
