@@ -1,0 +1,9 @@
+{
+  "db": {
+    "conn": "mongodb://localhost:27017/igz-download-manager-datastore?w=1"
+  },
+  "cookies": {
+    "maxAge": 3600000
+  },
+  "host": "https://appsthordev.intelygenz.com"
+}

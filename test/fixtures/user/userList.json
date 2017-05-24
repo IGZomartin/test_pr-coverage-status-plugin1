@@ -1,0 +1,35 @@
+[
+  {
+    "_id": "01f0000000000000003f0001",
+    "name": "Clark Kent",
+    "email": "clark@kent.com",
+    "client": "DailyMail",
+    "igzuser": false,
+    "ts": "1996-12-19T16:39:57+00:00"
+  },
+  {
+    "_id": "01f0000000000000003f0002",
+    "name": "Bruce Wayne",
+    "email": "bruce@wayne.com",
+    "client": "GothamCity",
+    "igzuser": false,
+    "ts": "2015-03-30T11:00:18.622+02:00"
+  },
+  {
+    "_id": "01f0000000000000003f0003",
+    "name": "Peter Parker",
+    "email": "peter@parker.com",
+    "client": "DailyBugle",
+    "igzuser": false,
+    "ts": "2015-03-29T11:00:18.622+02:00"
+  },
+  {
+    "_id": "01f0000000000000003f0004",
+    "name": "Super Admin",
+    "email": "admin@intelygenz.com",
+    "client": "Intelygenz",
+    "igzuser": true,
+    "ts": "2015-03-29T11:00:18.622+02:00"
+  }
+
+]
