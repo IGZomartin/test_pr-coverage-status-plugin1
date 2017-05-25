@@ -1,0 +1,9 @@
+{
+  "platform": "ios",
+  "platformVersion": "9.0",
+  "public": true,
+  "environment": "development",
+  "uploaded_at": "2015-03-31T11:00:18.622+0200",
+  "filePath": "/path/to/file",
+  "permission": "Permission"
+}

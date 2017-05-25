@@ -1,0 +1,8 @@
+{
+  "_id": "01f0000000000000013f0001",
+  "name": "BitBank",
+  "domains": ["bitbank.com"],
+  "whitelist": ["test@user.com"],
+  "envs": ["production", "test", "development"],
+  "ts": "2015-03-31T11:00:18.622+0200"
+}
