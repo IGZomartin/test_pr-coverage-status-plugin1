@@ -1,0 +1,100 @@
+{
+  "app": {
+    "name": "IGZDownloadManager",
+    "version": "0.0.1"
+  },
+  "host": "http://igzdownloader.local",
+  "port": 5050,
+  "log": {
+    "level": "debug",
+    "path": "/tmp/ig155back.log"
+  },
+  "cookies": {
+    "maxAge": 3600000
+  },
+  "db": {
+    "conn": "mongodb://localhost:27017/igz-download-manager-datastore?w=1"
+  },
+  "auth": {
+    "excludeAuthPaths": [
+      {
+        "endpoint": "^(?!\/api\/).*"
+      },
+      {
+        "method": "GET",
+        "endpoint": "\/images\/.+"
+      },
+      {
+        "method": "GET",
+        "endpoint": "\/api\/v1\/product\/.+\/compilation\/.+\/download"
+      },
+      {
+        "method": "GET",
+        "endpoint": "\/api\/v1\/product\/.+\/compilation\/.+\/plist"
+      },
+      {
+        "method": "POST",
+        "endpoint": "\/api\/v1\/user"
+      },
+      {
+        "method": "POST",
+        "endpoint": "\/api\/v1\/product\/[a-z0-9]+\/subscribe"
+      },
+      {
+        "method": "DELETE",
+        "endpoint": "\/api\/v1\/product\/[a-z0-9]+\/subscribe"
+      }
+    ],
+    "adminPathMatch": [
+      "\/api\/v1\/product*.",
+      "\/api\/v1\/client*."
+    ],
+    "productPathMiddleware": "/api/v1/product/(?:[0-9]+[a-z]|[a-z]+[0-9])[a-z0-9]*/*.*",
+    "superadminDomains": ["intelygenz.com"]
+  },
+  "validations": {
+    "email": "^\\w+([\\.-]?\\w+)*@\\w+([\\.-]?\\w+)*(\\.\\w{2,3})+$"
+  },
+  "mock": {
+    "path": "/test/sample_files/"
+  },
+  "cloud": {
+    "provider": "aws"
+  },
+  "aws":  {
+    "credentials": {
+      "accessKeyId": "<ENV_AWS_ACCESS_KEY_ID>",
+      "secretAccessKey": "<ENV_AWS_SECRET_ACCESS_KEY>"
+    },
+    "region": "us-east-1",
+    "bucket": "igz-node-myBucket-test"
+  },
+  "gcs": {
+    "credentials": {
+      "projectId": "<READ_ENV_GCS_PROJECT_ID>",
+      "keyFilename": "<READ_ENV_GCS_KEY_FILENAME>"
+    },
+    "bucket": "igz-node-bucket-test"
+  },
+  "plist":{
+    "downloadActionParameters": "itms-services://?action=download-manifest&url="
+  },
+  "listing": {
+    "pagesize": 10
+  },
+  "externalServices": {
+    "resonator":{
+      "host": "http://localhost:3000",
+      "services": {
+        "createIdentity": {
+          "path": "/api/identity"
+        },
+        "email": {
+          "path": "/api/notification/email"
+        }
+      }
+
+    }
+
+  }
+}

@@ -1,51 +1,73 @@
 {
-  "name": "backend-features",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "start": "node ./src/start",
-    "test": "npm run lint && npm run test-integration && npm run test-acceptance",
-    "test-unit": "./node_modules/.bin/mocha --recursive ./test/unit",
-    "test-integration": "./node_modules/.bin/mocha --recursive ./test/integration",
-    "test-acceptance": "./node_modules/.bin/cucumber-js ./test/acceptance/features -r ./test/acceptance/step_definitions --format pretty",
-    "test-acceptance-only": "./node_modules/.bin/cucumber-js ./test/acceptance/features -r ./test/acceptance/step_definitions --tags @only --format pretty",
-    "test-acceptance-hc": "./node_modules/.bin/cucumber-js ./test/hc/features -r ./test/acceptance/step_definitions --format pretty",
-    "coverage": "./node_modules/istanbul/lib/cli.js cover ./node_modules/.bin/cucumber-js ./test/acceptance/features -- -r ./test/acceptance/step_definitions --format json:tests_result.json",
-    "coverage-hc": "./node_modules/istanbul/lib/cli.js cover ./node_modules/.bin/cucumber-js test/hc/features -- -r ./test/acceptance/step_definitions --format json:tests_result.json",
-    "coverage-win": "node ./node_modules/istanbul/lib/cli.js cover node_modules/cucumber/bin/cucumber.js test/acceptance/features -- -r ./test/acceptance/step_definitions --format json:tests_result.json",
-    "lint": "eslint src test-unit test-acceptance test-integration",
-    "honestcode": "honestcode SylhloxoorybhxoxisrkG2es ./tests_result.json"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://us-gitlab.intelygenz.com/honestcode.io/backend-features.git"
-  },
-  "author": "",
+  "name": "IG155-back",
+  "version": "0.0.1",
+  "main": "bin/server.js",
+  "private": true,
+  "contributors": [
+    {
+      "name": "Nicolás M. Jaremek",
+      "email": "nicolas.jaremek@intelygenz.com"
+    },
+    {
+      "name": "David Suarez",
+      "email": "david.suarez@intelygenz.com"
+    },
+    {
+      "name": "Gustavo Marin",
+      "email": "gustavo.marin@intelygenz.com"
+    }
+  ],
   "license": "ISC",
+  "description": "Módulo de backend para la gestión de peticiones provenientes desde la aplicación de AngularJS perteneciente al Portal de Descargas IGZ.",
   "dependencies": {
-    "escape-string-regexp": "^1.0.5",
-    "moment": "^2.14.1",
-    "mongodb": "^2.2.2",
-    "request": "^2.67.0",
-    "restify": "^4.0.3",
-    "semver": "^5.1.0",
-    "sequelize": "^3.14.1",
-    "shortid": "^2.2.6",
-    "winston": "^2.2.0",
-    "winston-papertrail": "^1.0.2"
+    "async": "^1.4.2",
+    "aws-sdk": "^2.2.3",
+    "body-parser": "^1.13.3",
+    "bunyan": "^1.3.5",
+    "config": "^1.13.0",
+    "connect-mongo": "^0.8.2",
+    "cors": "^2.7.1",
+    "express": "^4.13.3",
+    "express-session": "^1.11.3",
+    "gcloud": "^0.21.0",
+    "lodash": "^3.10.1",
+    "mobile-detect": "^1.3.0",
+    "mongoose": "^4.1.7",
+    "on-finished": "^2.3.0",
+    "plist": "^1.1.0",
+    "request": "^2.65.0",
+    "restify-errors": "^3.0.0",
+    "slug": "^0.9.1",
+    "swagger-tools": "^0.9.5",
+    "yargs": "^3.28.0"
   },
   "devDependencies": {
-    "cucumber": "^1.2.1",
-    "eslint": "^2.2.0",
-    "eslint-plugin-extra-rules": "^0.6.1",
-    "honestcode": "^1.0.10",
+    "babel-eslint": "^4.1.3",
+    "eslint": "^1.7.2",
+    "eslint-config-igz": "^0.1.0",
+    "expect.js": "^0.3.1",
     "istanbul": "^0.4.0",
-    "mocha": "^2.3.4",
+    "mocha": "^2.3.1",
     "mockery": "^1.4.0",
-    "pre-commit": "^1.0.7",
-    "request-promise": "^3.0.0"
+    "nock": "^2.17.0",
+    "node-mongoose-fixtures": "^0.2.4",
+    "pre-commit": "^1.1.1",
+    "supertest": "^1.1.0",
+    "validator": "^4.0.6"
   },
+  "scripts": {
+    "fixtures": "node scripts/load_fixtures",
+    "start": "node bin/server.js",
+    "lint": "eslint lib test app.js",
+    "mocha": "NODE_ENV=test ./node_modules/.bin/mocha ./test/mocha/*",
+    "test": "npm run lint && npm run mocha",
+    "coverage": "NODE_ENV=test ./node_modules/.bin/istanbul cover node_modules/.bin/_mocha test/mocha/*"
+  },
+  "keywords": [
+    "authentication",
+    "management",
+    "downloader"
+  ],
   "pre-commit": [
     "lint"
   ]

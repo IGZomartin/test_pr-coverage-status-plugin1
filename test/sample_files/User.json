@@ -1,0 +1,23 @@
+[
+  {
+    "id": "01f0000000000000003f0001",
+    "email": "clark@kent.com",
+    "name": "Clark",
+    "client": "DailyMail",
+    "ts": "2015-03-31T11:00:18.622+0200"
+  },
+  {
+    "id": "01f0000000000000003f0002",
+    "email": "bruce@wayne.com",
+    "name": "Bruce",
+    "client": "GothamCity",
+    "ts": "2015-03-30T11:00:18.622+0200"
+  },
+  {
+    "id": "01f0000000000000003f0003",
+    "email": "peter@parker.com",
+    "name": "Peter",
+    "client": "DailyBugle",
+    "ts": "2015-03-29T11:00:18.622+0200"
+  }
+]

@@ -1,0 +1,1127 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "IGZ S-Thor API",
+    "description": "App API draft",
+    "version": "0.2.1"
+  },
+  "host": "localhost:5050",
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "basePath": "/api/v1",
+  "produces": [
+    "application/json",
+    "application/x-gzip"
+  ],
+  "consumes": [
+    "application/json",
+    "application/octet-stream"
+  ],
+  "paths": {
+    "/product/{id}": {
+      "get": {
+        "summary": "Product Info",
+        "description": "The endpoint returns information about one app.\n",
+        "x-swagger-router-controller": "Products",
+        "tags": ["Products"],
+        "operationId": "getProductInfo",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Product identifier",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Selected product info",
+            "schema": {
+              "$ref": "#/definitions/Product"
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Update product info",
+        "description": "Allows to update the info data of the specified product\n",
+        "x-swagger-router-controller": "Products",
+        "tags": ["Products"],
+        "operationId": "updateProductInfo",
+        "parameters": [
+          {
+            "name": "appdata",
+            "in": "body",
+            "description": "Product data in JSON format",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Product"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Product identifier",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response for the update request",
+            "schema": {
+              "$ref": "#/definitions/Success"
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete product",
+        "description": "Delete a product object from the application\n",
+        "x-swagger-router-controller": "Products",
+        "tags": ["Products"],
+        "operationId": "deleteProduct",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Product id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Product deleted successfully",
+            "schema": {
+              "$ref": "#/definitions/Success"
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/product": {
+      "post": {
+        "summary": "Create new product",
+        "description": "Create a new product object and add it to the application (compilation is created if its info is present)\n",
+        "x-swagger-router-controller": "Products",
+        "tags": ["Products"],
+        "operationId": "createProduct",
+        "parameters": [
+          {
+            "name": "appdata",
+            "in": "body",
+            "description": "Product info (and possible compilations(s))",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Product"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Product created successfully",
+            "schema": {
+              "$ref": "#/definitions/Success"
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/product/{id}/subscribe": {
+      "delete": {
+        "summary": "Cancel subscription",
+        "description": "Removes a product object identifier from the subscription list stored in the requester's user object\n",
+        "x-swagger-router-controller": "Users",
+        "tags": ["Subscriptions"],
+        "operationId": "deleteSubscription",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Product identifier for which the user unsubscribes",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Subscription successfully removed",
+            "schema": {
+              "$ref": "#/definitions/Success"
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create subscription",
+        "description": "Adds the product to the user subscription list enabling notifications on the app changes\n",
+        "x-swagger-router-controller": "Users",
+        "tags": ["Subscriptions"],
+        "operationId": "createSubscription",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Product identifier for which the user subscribes",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "A message indicating the success on performing the subscription",
+            "schema": {
+              "$ref": "#/definitions/Success"
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/product/list": {
+      "get": {
+        "summary": "List all the existing products",
+        "description": "Returns a list with info about all products filtered by user profile\n",
+        "x-swagger-router-controller": "Products",
+        "tags": ["Products"],
+        "operationId": "listAllProducts",
+        "parameters": [
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "Pagination offset",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "pagesize",
+            "in": "query",
+            "description": "Number of items per page",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "platform",
+            "in": "query",
+            "description": "Platform name that is contained in product compilations",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "description": "Product name",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of products",
+            "schema": {
+              "$ref": "#/definitions/PagResponse"
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/product/{id}/share/{target}": {
+      "post": {
+        "summary": "Share a product with another user",
+        "description": "Allows a public-profile product to be accessed by another user, specified as the target\n",
+        "x-swagger-router-controller": "Products",
+        "tags": ["Products"],
+        "operationId": "shareProduct",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "target",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully shared product with target user",
+            "schema": {
+              "$ref": "#/definitions/Success"
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/product/{id}/compilation": {
+      "get": {
+        "summary": "Obtain a list of compilations for product",
+        "description": "Returns a list of all the compilations associated to the requested product\n",
+        "x-swagger-router-controller": "Compilation",
+        "tags": ["Compilations"],
+        "operationId": "getCompilations",
+        "parameters": [
+          {
+            "name": "id",
+            "description": "Product identifier",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "platform",
+            "in": "query",
+            "description": "Filter the compilation list by platform name",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "platformversion",
+            "in": "query",
+            "description": "Allows to filter the compilation list by platform version",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "last",
+            "description": "If set to true, Only the most recent (highest version number) compilation is returned",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved list of compilations",
+            "schema": {
+              "$ref": "#/definitions/Success"
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new compilation for product",
+        "description": "Creates a new compilation object for the specified product and version\n",
+        "x-swagger-router-controller": "Compilation",
+        "tags": ["Compilations"],
+        "operationId": "createCompilation",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "compilation",
+            "in": "body",
+            "description": "Data required to create a new compilation object for the target product",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Compilation"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully created compilation",
+            "schema": {
+              "$ref": "#/definitions/Success"
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/product/{id}/compilation/{compilationId}": {
+      "delete": {
+        "summary": "Delete compilation",
+        "description": "Deletes a compilation withe the specified compilationId\n",
+        "x-swagger-router-controller": "Compilation",
+        "tags": ["Compilations"],
+        "operationId": "deleteCompilation",
+        "parameters": [
+          {
+            "name": "id",
+            "description": "Product identifier",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "compilationId",
+            "description": "Product compilation identifier",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully deleted compilation",
+            "schema": {
+              "$ref": "#/definitions/Success"
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Update compilation",
+        "description": "Update a compilation with the new info\n",
+        "x-swagger-router-controller": "Compilation",
+        "tags": ["Compilations"],
+        "operationId": "updateCompilation",
+        "parameters": [
+          {
+            "name": "id",
+            "description": "Product identifier",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "compilationId",
+            "description": "Product compilation identifier",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully updated compilation",
+            "schema": {
+              "$ref": "#/definitions/Success"
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/product/{id}/compilation/{compilationId}/download": {
+      "get": {
+        "summary": "Download product compilation file for specified version",
+        "description": "Downloads the compilation file associated to the product and version specified on the URL\n",
+        "x-swagger-router-controller": "Compilation",
+        "tags": ["Compilations"],
+        "operationId": "downloadCompilation",
+        "parameters": [
+          {
+            "name": "id",
+            "description": "Product identifier",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "compilationId",
+            "description": "Compilation identifier",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "operation success",
+            "schema": {
+              "type": "string",
+              "description": "This would be a file response"
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/product/{id}/compilation/{compilationId}/plist": {
+      "get": {
+        "summary": "Download product compilation iOS plist file for specified version",
+        "description": "Downloads the compilation iOS plist file associated to the product and version specified on the URL\n",
+        "x-swagger-router-controller": "Compilation",
+        "tags": ["Compilations"],
+        "operationId": "downloadCompilationPlist",
+        "parameters": [
+          {
+            "name": "id",
+            "description": "Product identifier",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "compilationId",
+            "description": "Compilation identifier",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "operation success",
+            "schema": {
+              "type": "file",
+              "description": "This would be a plist file response"
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/product/{id}/compilation/{compilationId}/ack": {
+      "put": {
+        "summary": "Ack Upload product compilation file for specified version",
+        "description": "Ack Upload the compilation file associated to the product and version specified on the URL\n",
+        "x-swagger-router-controller": "Compilation",
+        "tags": ["Compilations"],
+        "operationId": "uploadAckCompilation",
+        "parameters": [
+          {
+            "name": "id",
+            "description": "Product identifier",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "compilationId",
+            "description": "Compilation identifier",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "operation success",
+            "schema": {
+              "type": "string",
+              "description": "This would be a file response"
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/user": {
+      "get": {
+        "summary": "Logged user profile info",
+        "description": "Returns the logged user profile information\n",
+        "x-swagger-router-controller": "Users",
+        "tags": ["Users"],
+        "operationId": "getUser",
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved profile data",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new User object",
+        "description": "Adds a new User object to the database for someone to log in the application\n",
+        "x-swagger-router-controller": "Users",
+        "tags": ["Users"],
+        "operationId": "createUser",
+        "parameters": [
+          {
+            "name": "user",
+            "description": "User object with the contents of the new User",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully created User object",
+            "schema": {
+              "$ref": "#/definitions/ObjectId"
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/user/list": {
+      "get": {
+        "summary": "List existing users",
+        "description": "Returns a list with info about all users filtered by some optional parameters\n",
+        "x-swagger-router-controller": "Users",
+        "tags": ["Users"],
+        "operationId": "listAllUsers",
+        "parameters": [
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "Pagination offset",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "pagesize",
+            "in": "query",
+            "description": "Number of items per page",
+            "required": false,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of users",
+            "schema": {
+              "$ref": "#/definitions/PagResponse"
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/platforms": {
+      "get": {
+        "summary": "Platform master",
+        "description": "Return all the available platforms and platforms versions\n",
+        "x-swagger-router-controller": "Platforms",
+        "tags": ["Platforms"],
+        "operationId": "listPlatforms",
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved platforms list",
+            "schema": {
+              "$ref": "#/definitions/Platforms"
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/client": {
+      "post": {
+        "summary": "Create a new Client object",
+        "description": "Adds a new Client object to the database\n",
+        "x-swagger-router-controller": "Clients",
+        "tags": ["Clients"],
+        "operationId": "createClient",
+        "parameters": [
+          {
+            "name": "client",
+            "description": "Client object with the contents of the new Client",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Client"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully created Client object",
+            "schema": {
+              "$ref": "#/definitions/ObjectId"
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/client/{id}": {
+      "put": {
+        "summary": "Update Client object data",
+        "description": "Updates a Client object with the provided data\n",
+        "x-swagger-router-controller": "Clients",
+        "tags": ["Clients"],
+        "operationId": "updateClient",
+        "parameters": [
+          {
+            "name": "client",
+            "description": "Contents with the new data to set a Client object",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Client identifier",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully updated Client object",
+            "schema": {
+              "$ref": "#/definitions/ObjectId"
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a Client object",
+        "description": "Deletes the specified Client object\n",
+        "x-swagger-router-controller": "Clients",
+        "tags": ["Clients"],
+        "operationId": "deleteClient",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Client identifier",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successfully deleted Client object",
+            "schema": {
+              "$ref": "#/definitions/ObjectId"
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Get a Client object data",
+        "description": "Retrieves the data associated to the specified Client object\n",
+        "x-swagger-router-controller": "Clients",
+        "tags": ["Clients"],
+        "operationId": "getClient",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Client name",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Client object data",
+            "schema": {
+              "$ref": "#/definitions/Client"
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/client/list": {
+      "get": {
+        "summary": "Client master",
+        "description": "Returns a list with all the client configurations' info\n",
+        "x-swagger-router-controller": "Clients",
+        "tags": ["Clients"],
+        "operationId": "listClients",
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved client configs",
+            "schema": {
+              "$ref": "#/definitions/Client"
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/user/verify": {
+      "post": {
+        "summary": "New user email domain verification",
+        "description": "Checks whether the new user email domain belongs to any of the current clients' domains",
+        "x-swagger-router-controller": "Users",
+        "tags": ["Users"],
+        "operationId": "verifyEmailDomain",
+        "parameters": [
+          {
+            "name": "email",
+            "description": "Email to verify",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Domain"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully checked email domain validity",
+            "schema": {
+              "$ref": "#/definitions/DomainResponse"
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "User": {
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier representing a specific user."
+        },
+        "email": {
+          "type": "string",
+          "description": "An email address identifying uniquely this user in the database."
+        },
+        "client": {
+          "type": "string",
+          "description": "The name of the client/group this user belongs to."
+        },
+        "igzuser": {
+          "type": "boolean",
+          "description": "A flag indicating whether this user belongs to the Intelygenz company."
+        },
+        "userDomains": {
+          "type": "boolean",
+          "description": "To be defined."
+        },
+        "name": {
+          "type": "string",
+          "description": "Display name of user."
+        },
+        "subscriptions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "An array of product identifiers the user subscribed to."
+        }
+      }
+    },
+    "Product": {
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier representing a specific product."
+        },
+        "name": {
+          "type": "string",
+          "description": "Display name of product."
+        },
+        "description": {
+          "type": "string",
+          "description": "Product description."
+        },
+        "client": {
+          "type": "string",
+          "description": "Name of the client/group who owns the product."
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Datetime that indicates the product creation moment."
+        },
+        "icon": {
+          "type": "string",
+          "format": "byte",
+          "description": "A Base64 string that represent the product icon."
+        },
+        "public": {
+          "type": "boolean",
+          "description": "Public/private flag."
+        },
+        "compilations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Compilation"
+          },
+          "description": "An embedded array of compilation objects."
+        }
+      }
+    },
+    "Domain": {
+      "properties": {
+        "email": {
+          "type": "string",
+          "description": "The email to validate against the current clients' domains"
+        }
+      }
+    },
+    "Compilation": {
+      "properties": {
+        "version": {
+          "type": "string",
+          "description": "Version number associated to the compilation."
+        },
+        "platform": {
+          "type": "string",
+          "description": "Compilation platform."
+        },
+        "platformVersion": {
+          "type": "string",
+          "description": "Compilation platform version."
+        },
+        "public": {
+          "type": "boolean",
+          "description": "Privacy flag."
+        },
+        "environment": {
+          "type": "string",
+          "description": "Environment associated to this compilation."
+        },
+        "permission": {
+          "type": "string",
+          "description": "Not used yet."
+        },
+        "uploaded_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Datetime indicating when the compilation file was uploaded."
+        },
+        "filePath": {
+          "type": "string",
+          "description": "Path to locate the compilation file for download."
+        }
+      }
+    },
+    "Client": {
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Unique identifier for the Client object."
+        },
+        "envs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Array of strings that represent all the environments associated to this Client. E.g. -> [dev,ei,pro]."
+        },
+        "domains": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Array of strings containing the domains that can be associated to the Product objects. User signup is verified against these domains."
+        }
+      }
+    },
+    "Platforms": {
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Unique name of the platform."
+        },
+        "versions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Array of strings that represent all platforms versions configured for this platform. E.g. -> [4.0.1, 4.1.2, 4.3, 4.4]."
+        }
+      }
+    },
+    "Error": {
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32",
+          "description": "A numeric error identifier."
+        },
+        "message": {
+          "type": "string",
+          "description": "A human-friendly description of the error cause."
+        }
+      }
+    },
+    "Success": {
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32",
+          "description": "A numeric response identifier."
+        },
+        "message": {
+          "type": "string",
+          "description": "A human-friendly description of the success response."
+        }
+      }
+    },
+    "DomainResponse": {
+      "properties": {
+        "canRegister": {
+          "type": "boolean",
+          "description": "A boolean value indicating whether the provided email domain is valid for registration"
+        }
+      }
+    },
+    "PagResponse": {
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Product"
+          }
+        },
+        "offset": {
+          "type": "number",
+          "format": "int32"
+        },
+        "pagesize": {
+          "type": "number",
+          "format": "int32"
+        }
+      }
+    },
+    "ObjectId": {
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "An ObjectId string identifying a database object."
+        }
+      }
+    }
+  }
+}

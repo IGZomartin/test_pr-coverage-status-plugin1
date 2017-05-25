@@ -1,0 +1,34 @@
+[
+  {
+    "_id": "01f0000000000000013f0001",
+    "name": "BitBank",
+    "domains": ["bitbank.com"],
+    "whitelist": ["test@user.com"],
+    "envs": ["production", "test", "development"],
+    "ts": "2015-03-31T11:00:18.622+0200"
+  },
+  {
+    "_id": "01f0000000000000013f0002",
+    "name": "GothamCity",
+    "domains": ["gotham.com", "it.gotham.com"],
+    "whitelist": [],
+    "envs": ["production", "test", "development"],
+    "ts": "2015-03-31T11:00:18.622+0200"
+  },
+  {
+    "_id": "01f0000000000000013f0003",
+    "name": "DailyBugle",
+    "domains": ["daily.bugle.com"],
+    "whitelist": [],
+    "envs": ["production", "test", "development"],
+    "ts": "2015-03-31T11:00:18.622+0200"
+  },
+  {
+    "_id": "01f0000000000000013f0004",
+    "name": "DailyPlanet",
+    "domains": ["daily.planet.eu"],
+    "whitelist": [],
+    "envs": ["production", "development"],
+    "ts": "2015-03-31T11:00:18.622+0200"
+  }
+]
